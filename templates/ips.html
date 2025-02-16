@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPs Registradas</title>
+</head>
+<body>
+    <h1>Direcciones IP Registradas</h1>
+    <ul>
+        {% for ip in ip_addresses %}
+            <li>{{ ip }}</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Volver a la página principal</a>
+</body>
+</html>
