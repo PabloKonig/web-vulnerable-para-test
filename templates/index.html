@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas de Seguridad</title>
+</head>
+<body>
+    <h1>Pruebas de Seguridad</h1>
+    <form action="/execute" method="post">
+        <h2>Inyección de Comandos</h2>
+        <input type="text" name="command" placeholder="Introduce un comando" required>
+        <button type="submit">Ejecutar</button>
+    </form>
+
+    <form action="/xss" method="post">
+        <h2>XSS (Cross-Site Scripting)</h2>
+        <input type="text" name="input_data" placeholder="Introduce texto" required>
+        <button type="submit">Enviar</button>
+    </form>
+
+    <form action="/reverse_shell" method="post">
+        <h2>Reverse Shell</h2>
+        <input type="text" name="ip" placeholder="IP" required>
+        <input type="text" name="port" placeholder="Puerto" required>
+        <button type="submit">Conectar</button>
+    </form>
+
+    <a href="/info"><h2>Información del Servidor</h2></a>
+</body>
+</html>
